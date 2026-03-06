@@ -4,12 +4,13 @@ Treat this system as a production system.
 
 ## Getting Started
 
-Fork this repository into your own github.
-Make changes to this fork.
+Clone this repository locally.
+Create your own public git repository in github or somewhere we can access and push this code into it.
+Make changes to your repository.
 Getting things to work for you is part of the assessment.
 
-You will be assessed by someone cloning your repository and running your instructions to recreate the expected solution.
-If we cannot run your repository we cannot assess your work.
+You will be assessed by someone cloning your repository when you're finished and running your instructions to recreate the expected solution.
+If we cannot run your repository instructions we cannot assess your work.
 
 ### Prerequsites
 
