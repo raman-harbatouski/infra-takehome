@@ -12,10 +12,10 @@
 
 ### Running the project
 
-**Windows (PowerShell):**
+**Windows:**
 
-```powershell
-.\scripts\setup.ps1
+```
+.\scripts\setup.sh
 ```
 
 **Linux / macOS:**
