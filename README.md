@@ -1,55 +1,57 @@
-# Infrastructure Take Home
+### Prerequisites
 
-Treat this system as a production system.
 
-## Getting Started
+| Tool           | Install                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------ |
+| Docker Desktop | [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop) |
+| k3d            | [https://k3d.io/#installation](https://k3d.io/#installation)                                     |
+| OpenTofu       | [https://opentofu.org/docs/intro/install](https://opentofu.org/docs/intro/install)               |
+| kubectl        | [https://kubernetes.io/docs/tasks/tools](https://kubernetes.io/docs/tasks/tools)                 |
+| git            | [https://git-scm.com](https://git-scm.com)                                                       |
 
-Clone this repository locally.
-Create your own public git repository in github or somewhere we can access and push this code into it.
-Make changes to your repository.
-Getting things to work for you is part of the assessment.
 
-You will be assessed by someone cloning your repository when you're finished and running your instructions to recreate the expected solution.
-If we cannot run your repository instructions we cannot assess your work.
+### Running the project
 
-### Prerequsites
+**Windows (PowerShell):**
 
-You will need the following:
-* docker runtime and tools
-* k3d CLI
-* opentofu binary or terraform
-* kubectl binary
-* git
+```powershell
+.\scripts\setup.ps1
+```
 
-## Starting point
+**Linux / macOS:**
 
-Use terraform or opentofu to initialise a k3d cluster and postgres instance locally from the `tofu` directory.
-Install Argo CD into the k3d cluster by following the instructions in the `argocd` directory.
+```bash
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
 
-# Problem
+The script will:
 
-Please add commits to your fork of the repo to answer this problem.
-Note: the use of the word `postgrest` is confusing, but correct - this is a project that we're going to deploy.
+1. Verify all prerequisites are installed and Docker is running
+2. Initialise OpenTofu providers
+3. Deploy infrastructure (k3d cluster, Postgres, PostgREST, Kubernetes resources)
 
-## Add a user to the database
+Once complete, PostgREST is accessible at **[http://localhost:8080](http://localhost:8080)**.
 
-Please add a super user to the postgrest database.
+To query the notifications table that is populated every minute by the CronJob:
 
-## Inject a secret for postgrest
+```
+http://localhost:8080/notifications
+```
 
-Creating a superuser account in this new database, inject the secrets into the k3d cluster into a namespace called postgrest.
-You must do this with terraform/opentofu.
+Example response:
 
-## Install Postgrest into the k3d cluster
+![notifications endpoint](images/table.png)
 
-https://docs.postgrest.org/en/v14/
+### Manual setup
 
-The result should be an accessible endpoint that you can use in your browser.
+If you prefer to run the steps yourself, from the `tofu/` directory:
 
-## Inject some data from the cluster using a `Job`
+```bash
+tofu init
+tofu apply -target="terraform_data.k3d_cluster" -target="terraform_data.k3d_ready" -auto-approve
+tofu apply -auto-approve
+```
 
-Use a kubernetes job to inject some data into the postgres database
+The k3d cluster must be provisioned before the remaining resources (Postgres, PostgREST, Kubernetes) can be applied, hence the two-phase apply.
 
-## Provide an expected screenshot
-
-Update this file, README.md, with a screenshot of what we should see when we visit the URL after following your instructions - this should show us the data you have injected.
