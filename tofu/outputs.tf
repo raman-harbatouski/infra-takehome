@@ -18,3 +18,9 @@ output "postgres_connection_string" {
   value       = "postgresql://postgres:${var.postgres_password}@localhost:${var.postgres_port}/app"
   sensitive   = true
 }
+
+output "superuser_password" {
+  description = "Generated password for the PostgreSQL superuser role"
+  value       = random_password.superuser.result
+  sensitive   = true
+}
