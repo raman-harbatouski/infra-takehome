@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: seed-data
+  namespace: postgrest
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 4
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: seed
+              image: postgres:16-alpine
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  psql $PGRST_DB_URI \
+                    -c "INSERT INTO notifications (message) VALUES ('Notification at ' || NOW());"
+              envFrom:
+                - secretRef:
+                    name: postgrest-superuser

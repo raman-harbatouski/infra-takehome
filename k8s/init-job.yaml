@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db
+  namespace: postgrest
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: init
+          image: postgres:16-alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              psql $PGRST_DB_URI \
+                -c "CREATE TABLE IF NOT EXISTS notifications (
+                      id         SERIAL PRIMARY KEY,
+                      message    TEXT        NOT NULL,
+                      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                    );" \
+                -c "INSERT INTO notifications (message) VALUES ('Init notification at ' || NOW());" \
+                -c "SELECT pg_notify('pgrst', 'reload schema');"
+          envFrom:
+            - secretRef:
+                name: postgrest-superuser

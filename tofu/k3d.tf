@@ -5,11 +5,19 @@ resource "terraform_data" "k3d_cluster" {
   }
 
   provisioner "local-exec" {
-    command = "k3d cluster create ${self.input.name} --image ${self.input.image} --servers 1 --agents 0 -p '8080:80@loadbalancer'"
+    command = "k3d cluster create ${self.input.name} --image ${self.input.image} --servers 1 --agents 0 -p 8080:80@loadbalancer"
   }
 
   provisioner "local-exec" {
     when    = destroy
     command = "k3d cluster delete ${self.input.name}"
+  }
+}
+
+resource "terraform_data" "k3d_ready" {
+  depends_on = [terraform_data.k3d_cluster]
+
+  provisioner "local-exec" {
+    command = "kubectl wait --for=condition=Ready node --all --timeout=60s"
   }
 }

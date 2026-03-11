@@ -5,7 +5,7 @@ output "cluster_name" {
 
 output "postgres_host" {
   description = "PostgreSQL connection host"
-  value       = "localhost"
+  value       = docker_container.postgres.hostname
 }
 
 output "postgres_port" {
@@ -14,13 +14,23 @@ output "postgres_port" {
 }
 
 output "postgres_connection_string" {
-  description = "PostgreSQL connection string"
+  description = "PostgreSQL connection string for the admin user"
   value       = "postgresql://postgres:${var.postgres_password}@localhost:${var.postgres_port}/app"
   sensitive   = true
 }
 
-output "superuser_password" {
-  description = "Generated password for the PostgreSQL superuser role"
-  value       = random_password.superuser.result
+output "postgrest_superuser_connection_string" {
+  description = "PostgreSQL connection string for the postgrest superuser"
+  value       = "postgresql://postgrest_superuser:${random_password.postgrest_superuser.result}@localhost:${var.postgres_port}/postgrest"
   sensitive   = true
+}
+
+output "postgrest_namespace" {
+  description = "Kubernetes namespace where PostgREST is deployed"
+  value       = kubernetes_namespace.postgrest.metadata[0].name
+}
+
+output "postgrest_url" {
+  description = "URL to access PostgREST in the browser"
+  value       = "http://localhost:8080"
 }
